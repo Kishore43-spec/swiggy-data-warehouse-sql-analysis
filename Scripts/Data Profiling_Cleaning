@@ -16,7 +16,7 @@ from swiggy_stage_table;
 
 
 -- Blank or Empty Strings 
--- Check for Blank or Empty Strings 
+--Check for Blank or Empty Strings 
 select *
 from swiggy_stage_table
 where state = ''
@@ -26,23 +26,23 @@ where state = ''
    or category = ''
    or dish_name = '';
 
-   -- Check for Duplicate Records 
-SELECT 
+   --Check for Duplicate Records 
+select
 State, 
 City, 
 order_date, 
-Restaurant_Name, 
+Restaurant_name, 
 Location, 
 Category, 
-Dish_Name, 
-price_INR, 
+Dish_name, 
+price_inr, 
 rating, 
 rating_count, 
-COUNT(*) AS CNT 
-FROM swiggy_stage_table
-GROUP BY 
+count(*) AS CNT 
+from swiggy_stage_table
+group by
 State, 
-City, 
+city,
 order_date, 
 Restaurant_Name, 
 Location, 
@@ -51,8 +51,7 @@ Dish_Name,
 price_INR, 
 rating, 
 rating_count 
- 
-HAVING COUNT(*) > 1;
+having count(*) > 1;
 
 -- Delete Duplication by using row_number (window function)
  
@@ -77,6 +76,7 @@ WITH CTE AS
 ) 
 delete from CTE 
 where rn > 1; 
+
 
 
 
