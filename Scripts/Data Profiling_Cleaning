@@ -1,0 +1,82 @@
+--Data Profiling & cleaning
+
+-- Data Cleaning -- Check for NULL Values in Each Column 
+select 
+    sum(case when state is null then 1 else 0 end) as null_state,
+    sum(case when city is null then 1 else 0 end) as null_city,
+    sum(case when order_date is null then 1 else 0 end) as null_order_date,
+    sum(case when restaurant_name is null then 1 else 0 end) as null_restaurant,
+    sum(case when location is null then 1 else 0 end) as null_location,
+    sum(case when category is null then 1 else 0 end) as null_category,
+    sum(case when dish_name is null then 1 else 0 end) as null_dish,
+    sum(case when price_inr is null then 1 else 0 end) as null_price,
+    sum(case when rating is null then 1 else 0 end) as null_rating,
+    sum(case when rating_count is null then 1 else 0 end) as null_rating_count
+from swiggy_stage_table;
+
+
+-- Blank or Empty Strings 
+-- Check for Blank or Empty Strings 
+select *
+from swiggy_stage_table
+where state = ''
+   or city = ''
+   or restaurant_name = ''
+   or location = ''
+   or category = ''
+   or dish_name = '';
+
+   -- Check for Duplicate Records 
+SELECT 
+State, 
+City, 
+order_date, 
+Restaurant_Name, 
+Location, 
+Category, 
+Dish_Name, 
+price_INR, 
+rating, 
+rating_count, 
+COUNT(*) AS CNT 
+FROM swiggy_stage_table
+GROUP BY 
+State, 
+City, 
+order_date, 
+Restaurant_Name, 
+Location, 
+Category, 
+Dish_Name, 
+price_INR, 
+rating, 
+rating_count 
+ 
+HAVING COUNT(*) > 1;
+
+-- Delete Duplication by using row_number (window function)
+ 
+WITH CTE AS 
+( 
+    Select *, 
+           ROW_NUMBER() OVER 
+           ( 
+               PARTITION BY State, 
+                            City, 
+                            order_date, 
+                            restaurant_name, 
+                            location, 
+                            category, 
+                            dish_name, 
+                            price_INR, 
+                            rating, 
+                            rating_count 
+               ORDER BY (SELECT NULL) 
+           ) AS rn 
+    from swiggy_stage_table
+) 
+delete from CTE 
+where rn > 1; 
+
+
+
