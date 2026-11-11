@@ -1,0 +1,78 @@
+/*
+
+creating the warehouse of swiggy company to store the history data of the business and then ask question to the model 
+by using SQL to understand about its business performance
+
+We have data in Csv file we use bulk insert to load the into stage table by source
+------------------------
+
+Model : Dimension Model
+Schema : start schema
+
+------------------------
+Tools Used for these Project
+
+SQL Server
+SSMS
+Draw.io
+Git, Github
+
+*/
+
+--creating the database
+
+create database swiggy_db
+
+--use swiggy database
+use swiggy_db
+
+--creating the stage table to store the raw source data
+if object_id('swiggy_stage_table','U') is not null
+drop table swiggy_stage_table
+create table swiggy_stage_table
+(
+	state varchar(200),
+	city varchar(200),
+	order_date varchar(100),
+	restaurant_name varchar(200),
+	location varchar(200),
+	category varchar(200),
+	dish_name varchar(200),
+	price_inr decimal(10,2),
+	rating decimal(10,2),
+	rating_count int
+)
+
+--Loading the data from file to stage_table
+
+--bulk insert
+
+--stored procedure 
+--creating stored procedure for full load 
+--no parameters
+
+create or alter procedure Data_load_Stage 
+as 
+begin
+	declare @start_time date , @end_time date
+	print('<< truncate load');
+	print('=======================');
+	print('loading the data');
+
+	set @start_time = getdate()
+	bulk insert swiggy_stage_table
+	from 'D:\SQL Server-Vinay Tech\SQL_Project\Swiggy_Data .csv'
+	with(
+	format = 'csv',
+	firstrow = 2,
+	fieldterminator = ',',
+	tablock
+	)
+	set @end_time = getdate()
+	print('Total load Time: ' + cast(datediff(minute, @start_time,@end_time)as varchar));
+end
+
+
+--call the procedure
+exec Data_load_Stage
+
