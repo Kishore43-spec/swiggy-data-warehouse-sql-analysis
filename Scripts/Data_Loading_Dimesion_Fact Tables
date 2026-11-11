@@ -1,1 +1,73 @@
 
+
+
+--load the data from stage table to dimension and fact tables
+
+--creating the ##temp_table to store the  transformed data
+
+
+create table ##temp_table
+(
+    state varchar(200),
+	city varchar(200),
+	order_date date,
+	restaurant_name varchar(200),
+	location varchar(200),
+	category varchar(200),
+	dish_name varchar(200),
+	price_inr decimal(10,2),
+	rating decimal(10,2),
+	rating_count int
+)
+
+
+insert into ##temp_table (
+    state,
+    city,
+    order_date,
+    restaurant_name,
+    location,
+    category,
+    dish_name,
+    price_inr,
+    rating,
+    rating_count
+)
+select
+    state,
+    city,
+    try_cast(order_date as date) as order_date,
+    restaurant_name,
+    location,
+    category,
+    dish_name,
+    price_inr,
+    rating,
+    rating_count
+from swiggy_stage_table
+where try_cast(order_date as date) is not null;
+
+
+insert into dim_date(
+    full_date, 
+    year, 
+    month, 
+    month_name, 
+    quarter, 
+    week, 
+    day  
+)
+select 
+order_date,
+year(order_date) as year,
+month(order_date) as month,
+datename(month, order_date) as datename,
+datepart(quarter, order_date) as datepart,
+datepart(week,order_date) as week,
+day(order_date) as day
+from ##temp_table
+
+
+select * from dim_date
+
+------------To be continuedddddddddddddddddddd-----------------------
